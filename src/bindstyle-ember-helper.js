@@ -1,0 +1,80 @@
+Ember.Handlebars.registerHelper('bindStyle', function(options) {
+  var fmt = Ember.String.fmt;
+  var attrs = options.hash;
+
+  ember_assert("You must specify at least one hash argument to bindStyle", !!Ember.keys(attrs).length);
+
+  var view = options.data.view;
+  var ret = [];
+  var ctx = this;
+
+  // Generate a unique id for this element. This will be added as a
+  // data attribute to the element so it can be looked up when
+  // the bound property changes.
+  var dataId = ++jQuery.uuid;
+
+  var attrKeys = Ember.keys(attrs).filter(function(item, index, self) {
+    if (item.indexOf("unit")==-1) { return true; }
+  })
+
+  // For each attribute passed, create an observer and emit the
+  // current value of the property as an attribute.
+  attrKeys.forEach(function(attr) {
+    var property = attrs[attr];
+
+    ember_assert(fmt("You must provide a String for a bound attribute, not %@", [property]), typeof property === 'string');
+
+    var propertyUnit = attrs[attr+"-unit"];
+
+    if(propertyUnit==undefined)
+    {
+      propertyUnit = attrs["unit"]; 
+    } 
+
+    ember_assert(fmt("You must provide at least a global unit that will be used for all style properties"), propertyUnit != null);
+
+    var value = Em.getPath(ctx, property);
+
+    ember_assert(fmt("Attributes must be numbers, strings or booleans, not %@", [value]), value == null || typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean');
+
+    var observer, invoker;
+
+    observer = function observer() {
+      var result = Em.getPath(ctx, property);
+
+      ember_assert(fmt("Attributes must be numbers, strings or booleans, not %@", [result]), result == null || typeof result === 'number' || typeof result === 'string' || typeof result === 'boolean');
+
+      var elem = view.$("[data-bindAttr-" + dataId + "='" + dataId + "']");
+
+      // If we aren't able to find the element, it means the element
+      // to which we were bound has been removed from the view.
+      // In that case, we can assume the template has been re-rendered
+      // and we need to clean up the observer.
+      if (elem.length === 0) {
+        Ember.removeObserver(ctx, property, invoker);
+        return;
+      }
+
+      var currentValue = elem.css(attr);
+
+      if (currentValue !== result) {
+        elem.css(attr, result);
+      }
+    };
+
+    invoker = function() {
+      Ember.run.once(observer);
+    };
+
+    // Add an observer to the view for when the property changes.
+    // When the observer fires, find the element using the
+    // unique data id and update the attribute to the new value.
+    Ember.addObserver(ctx, property, invoker);
+
+    ret.push('style="'+attr+':'+value+propertyUnit+';"');
+  }, this);
+
+  // Add the unique identifier
+  ret.push('data-bindAttr-' + dataId + '="' + dataId + '"');
+  return new Ember.Handlebars.SafeString(ret.join(' '));
+});
