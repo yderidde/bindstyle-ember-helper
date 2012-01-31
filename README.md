@@ -28,13 +28,17 @@ In your handlebars template you will then do
 You must define the unit for the value to be used. There are 2 ways to define units.  
 
 1. Global unit   
+
 ```html
 <div class="bar" {{bindStyle unit="px" width="barWidth" height="barHeight"}}></div> 
-```
-2. Specific unit   
+```   
+
+2. Specific unit    
+
 ```html
 <div class="bar" {{bindStyle width="barWidth" width-unit="px" height="barHeight" height-unit="%"}}></div> 
-```
+```    
 
 If you define a global unit and specific units. The specific unit take precedence over the global when defined.
 
+That's it
