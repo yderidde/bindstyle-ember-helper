@@ -33,14 +33,14 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
 
     Ember.assert(fmt("You must provide at least a global unit that will be used for all style properties"), propertyUnit != null);
 
-    var value = Em.getPath(ctx, property);
+    var value = Em.get(ctx, property);
 
     Ember.assert(fmt("Attributes must be numbers, strings or booleans, not %@", [value]), value == null || typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean');
 
     var observer, invoker;
 
     observer = function observer() {
-      var result = Em.getPath(ctx, property);
+      var result = Em.get(ctx, property);
 
       Ember.assert(fmt("Attributes must be numbers, strings or booleans, not %@", [result]), result == null || typeof result === 'number' || typeof result === 'string' || typeof result === 'boolean');
 
