@@ -14,7 +14,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
   var dataId = ++jQuery.uuid;
 
   var attrKeys = Ember.keys(attrs).filter(function(item, index, self) {
-    if (item.indexOf("unit")==-1) { return true; }
+    return (item.indexOf("unit") == -1) && (item !== "static");
   })
 
   // For each attribute passed, create an observer and emit the
@@ -71,7 +71,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
     // unique data id and update the attribute to the new value.
     Ember.addObserver(ctx, property, invoker);
 
-    ret.push('style="'+attr+':'+value+propertyUnit+';"');
+    ret.push('style="'+attr+':'+value+propertyUnit+';'+(attrs["static"] || '')+'"');
   }, this);
 
   // Add the unique identifier
