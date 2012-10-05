@@ -2,7 +2,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
   var fmt = Ember.String.fmt;
   var attrs = options.hash;
 
-  ember_assert("You must specify at least one hash argument to bindStyle", !!Ember.keys(attrs).length);
+  Ember.assert("You must specify at least one hash argument to bindStyle", !!Ember.keys(attrs).length);
 
   var view = options.data.view;
   var ret = [];
@@ -22,7 +22,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
   attrKeys.forEach(function(attr) {
     var property = attrs[attr];
 
-    ember_assert(fmt("You must provide a String for a bound attribute, not %@", [property]), typeof property === 'string');
+    Ember.assert(fmt("You must provide a String for a bound attribute, not %@", [property]), typeof property === 'string');
 
     var propertyUnit = attrs[attr+"-unit"];
 
@@ -31,18 +31,18 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
       propertyUnit = attrs["unit"]; 
     } 
 
-    ember_assert(fmt("You must provide at least a global unit that will be used for all style properties"), propertyUnit != null);
+    Ember.assert(fmt("You must provide at least a global unit that will be used for all style properties"), propertyUnit != null);
 
     var value = Em.getPath(ctx, property);
 
-    ember_assert(fmt("Attributes must be numbers, strings or booleans, not %@", [value]), value == null || typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean');
+    Ember.assert(fmt("Attributes must be numbers, strings or booleans, not %@", [value]), value == null || typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean');
 
     var observer, invoker;
 
     observer = function observer() {
       var result = Em.getPath(ctx, property);
 
-      ember_assert(fmt("Attributes must be numbers, strings or booleans, not %@", [result]), result == null || typeof result === 'number' || typeof result === 'string' || typeof result === 'boolean');
+      Ember.assert(fmt("Attributes must be numbers, strings or booleans, not %@", [result]), result == null || typeof result === 'number' || typeof result === 'string' || typeof result === 'boolean');
 
       var elem = view.$("[data-bindAttr-" + dataId + "='" + dataId + "']");
 
