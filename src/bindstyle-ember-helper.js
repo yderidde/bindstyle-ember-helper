@@ -24,14 +24,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
 
     Ember.assert(fmt("You must provide a String for a bound attribute, not %@", [property]), typeof property === 'string');
 
-    var propertyUnit = attrs[attr+"-unit"];
-
-    if(propertyUnit==undefined)
-    {
-      propertyUnit = attrs["unit"]; 
-    } 
-
-    Ember.assert(fmt("You must provide at least a global unit that will be used for all style properties"), propertyUnit != null);
+    var propertyUnit = attrs[attr+"-unit"] || attrs["unit"] || ''; 
 
     var value = Em.get(ctx, property);
 
