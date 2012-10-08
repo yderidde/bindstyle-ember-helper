@@ -30,6 +30,10 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
     {
       propertyUnit = attrs["unit"]; 
     } 
+    if(propertyUnit==undefined)
+    {
+      propertyUnit = '';
+    }
 
     Ember.assert(fmt("You must provide at least a global unit that will be used for all style properties"), propertyUnit != null);
 
