@@ -15,7 +15,7 @@ Imagine a view that contains the width of a bar in your bar-chart.
 
 ```javascript
 App.MyBarChart = Ember.View.extend({
-	barWidth: 200;
+	barWidth: 200
 });
 ```
 
