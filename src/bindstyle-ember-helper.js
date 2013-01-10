@@ -6,6 +6,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
 
   var view = options.data.view;
   var ret = [];
+  var style = [];
   var ctx = this;
 
   // Generate a unique id for this element. This will be added as a
@@ -15,7 +16,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
 
   var attrKeys = Ember.keys(attrs).filter(function(item, index, self) {
     return (item.indexOf("unit") == -1) && (item !== "static");
-  })
+  });
 
   // For each attribute passed, create an observer and emit the
   // current value of the property as an attribute.
@@ -64,10 +65,10 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
     // unique data id and update the attribute to the new value.
     Ember.addObserver(ctx, property, invoker);
 
-    ret.push('style="'+attr+':'+value+propertyUnit+';'+(attrs["static"] || '')+'"');
+    ret.push(attr+':'+value+propertyUnit+';'+(attrs["static"] || ''));
   }, this);
 
   // Add the unique identifier
-  ret.push('data-bindAttr-' + dataId + '="' + dataId + '"');
+  ret.push('style="' + style.join(' ') + '" data-bindAttr-' + dataId + '="' + dataId + '"');
   return new Ember.Handlebars.SafeString(ret.join(' '));
 });
