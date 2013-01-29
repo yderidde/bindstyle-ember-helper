@@ -65,7 +65,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
     // unique data id and update the attribute to the new value.
     Ember.addObserver(ctx, property, invoker);
 
-    ret.push(attr+':'+value+propertyUnit+';'+(attrs["static"] || ''));
+    style.push(attr+':'+value+propertyUnit+';'+(attrs["static"] || ''));
   }, this);
 
   // Add the unique identifier
