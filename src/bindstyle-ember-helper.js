@@ -12,7 +12,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
   // Generate a unique id for this element. This will be added as a
   // data attribute to the element so it can be looked up when
   // the bound property changes.
-  var dataId = ++jQuery.uuid;
+  var dataId = ++Ember.uuid;
 
   var attrKeys = Ember.keys(attrs).filter(function(item, index, self) {
     return (item.indexOf("unit") == -1) && (item !== "static");
