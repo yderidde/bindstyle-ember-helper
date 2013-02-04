@@ -44,7 +44,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
       // to which we were bound has been removed from the view.
       // In that case, we can assume the template has been re-rendered
       // and we need to clean up the observer.
-      if (elem.length === 0) {
+      if (Ember.isNone(elem) || elem.length === 0) {
         Ember.removeObserver(ctx, property, invoker);
         return;
       }
