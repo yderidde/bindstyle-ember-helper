@@ -52,7 +52,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
       var currentValue = elem.css(attr);
 
       if (currentValue !== result) {
-        elem.css(attr, result);
+        elem.css(attr, result+propertyUnit);
       }
     };
 
