@@ -49,6 +49,10 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
         return;
       }
 
+      if (result == null) {
+        result = "";
+      }
+
       if (result !== "") {
         result += propertyUnit;
       }
@@ -68,6 +72,10 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
     // When the observer fires, find the element using the
     // unique data id and update the attribute to the new value.
     Ember.addObserver(ctx, property, invoker);
+
+    if (value == null) {
+      value = "";
+    }
 
     if (value !== "") {
       value += propertyUnit;
