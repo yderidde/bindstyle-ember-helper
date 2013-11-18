@@ -49,10 +49,14 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
         return;
       }
 
+      if (result !== "") {
+        result += propertyUnit;
+      }
+
       var currentValue = elem.css(attr);
 
       if (currentValue !== result) {
-        elem.css(attr, result+propertyUnit);
+        elem.css(attr, result);
       }
     };
 
@@ -65,7 +69,13 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
     // unique data id and update the attribute to the new value.
     Ember.addObserver(ctx, property, invoker);
 
-    style.push(attr+':'+value+propertyUnit+';');
+    if (value !== "") {
+      value += propertyUnit;
+    }
+
+    if (value) {
+      style.push(attr+':'+value+';');
+    }
   }, this);
 
   style.push(attrs["static"] || '');
