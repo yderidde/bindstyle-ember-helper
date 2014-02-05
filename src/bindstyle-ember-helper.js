@@ -91,7 +91,11 @@ EmberHandlebars.registerHelper('bind-style', function bindStyleHelper(options) {
         value += 'px';
       }
 
-      ret.push(styleName, ':', Handlebars.Utils.escapeExpression(value), ';');
+      value = Handlebars.Utils.escapeExpression(value);
+
+      if (value) {
+        ret.push(styleName, ':', value, ';');
+      }
     }
   }, this);
 
