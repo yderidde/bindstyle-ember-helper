@@ -1,4 +1,4 @@
-# bindStyle-ember-helper
+# bindstyle-ember-helper
 
 A very simple handlebar helper for [ember.js](http://emberjs.com) which allow you to bind style properties in your templates. 
 
