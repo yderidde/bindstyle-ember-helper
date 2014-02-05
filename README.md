@@ -4,41 +4,32 @@ A very simple handlebar helper for [ember.js](http://emberjs.com) which allow yo
 
 ## Requirements
 
-Ember.js
+Ember.js 1.3.0+
 
 ## Usage
 ---
-{{bindStyle}} is based on ember {{bindAttr}} and works pretty much the same way.
+{{bind-style}} is based on ember {{bind-attr}} and works similarly.
 
 
 Imagine a view that contains the width of a bar in your bar-chart.
 
 ```javascript
 App.MyBarChart = Ember.View.extend({
-	barWidth: 200
+  barWidth: 200
 });
 ```
 
 In your handlebars template you will then do  
 
 ```html
-<div class="bar" {{bindStyle width="barWidth" width-unit="px"}}></div> 
+<div class="bar" {{bind-style width="barWidth"}}></div> 
 ```
 
-You must define the unit for the value to be used. There are 2 ways to define units.  
-
-Global unit   
+In this case, since `barWidth` evaluates to a number, and the CSS `width` property takes a length value, `px` is automatically added to the value. Thus the resulting HTML will be:
 
 ```html
-<div class="bar" {{bindStyle unit="px" width="barWidth" height="barHeight"}}></div> 
-```   
+<div class="bar" style="width:200px"></div>
+```
 
-Specific unit    
+Note: Unit expansion works in exactly the same way as jQuery's `css` method (in fact it uses the same underlying code).
 
-```html
-<div class="bar" {{bindStyle width="barWidth" width-unit="px" height="barHeight" height-unit="%"}}></div> 
-```    
-
-If you define a global unit and specific units. The specific unit take precedence over the global when defined.
-
-That's it
