@@ -38,7 +38,6 @@ EmberHandlebars.registerHelper('bind-style', function bindStyleHelper(options) {
     Ember.assert(fmt("You must provide an expression as the value of bound style. You specified: %@=%@", [styleName, path]), typeof path === 'string');
 
     normalized = normalizePath(ctx, path, options.data);
-    styleName = jQuery.camelCase(styleName);
 
     var value = (path === 'this') ? normalized.root : handlebarsGet(ctx, path, options),
         type = Ember.typeOf(value);
