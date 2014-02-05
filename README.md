@@ -1,44 +1,38 @@
-# bindStyle-ember-helper
+# bindstyle-ember-helper
 
-A very simple handlebar helper for [ember.js](http://emberjs.com) which allow you to bind style properties in your templates. 
+A [Handlebars](http://handlebarsjs.com) helper for [Ember](http://emberjs.com) which allows you to bind style properties in your templates. 
 
 ## Requirements
 
-Ember.js
+Ember.js 1.3.0+
 
 ## Usage
----
-{{bindStyle}} is based on ember {{bindAttr}} and works pretty much the same way.
+
+{{bind-style}} is based on Ember's built-in {{bind-attr}} and works similarly, except that you pass CSS name-value pairs, rather than attribute name-value pairs. There is currently no support for static styles, but you really shouldn't be using static inline styles anyways. Put those in your style sheet!
 
 
-Imagine a view that contains the width of a bar in your bar-chart.
+Imagine a view that contains the width of a bar in your bar-chart:
 
 ```javascript
 App.MyBarChart = Ember.View.extend({
-	barWidth: 200
+  barWidth: 200
 });
 ```
 
-In your handlebars template you will then do  
+And a template that binds it to the CSS width of an element:
 
 ```html
-<div class="bar" {{bindStyle width="barWidth" width-unit="px"}}></div> 
+<div class="bar" {{bind-style width="barWidth"}}></div>
 ```
 
-You must define the unit for the value to be used. There are 2 ways to define units.  
-
-Global unit   
+The resulting HTML will be:
 
 ```html
-<div class="bar" {{bindStyle unit="px" width="barWidth" height="barHeight"}}></div> 
-```   
+<div class="bar" style="width:200px"></div>
+```
 
-Specific unit    
+Note: In this case, since `barWidth` evaluates to a number, and the CSS `width` property takes a length value, `px` is automatically added to the value. Unit expansion works in exactly the same way as jQuery's `css` method (in fact it uses the same underlying jQuery methods).
 
-```html
-<div class="bar" {{bindStyle width="barWidth" width-unit="px" height="barHeight" height-unit="%"}}></div> 
-```    
+---
 
-If you define a global unit and specific units. The specific unit take precedence over the global when defined.
-
-That's it
+Please be aware: You **can not** use both {{bind-style}} with {{bind-attr style=...}} in a single element. Duplicate attribute declarations are not allowed in HTML.
