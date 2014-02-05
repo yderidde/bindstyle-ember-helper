@@ -7,10 +7,52 @@ var handlebarsGet = EmberHandlebars.get, normalizePath = EmberHandlebars.normali
 var forEach = Ember.ArrayPolyfills.forEach;
 
 /**
- * `bind-style` helper.
- * 
- * Modelled off the `bind-attr` helper, this helper allows you to bind to several styles.
- */
+  `bind-style` allows you to create a binding between DOM element styles and
+  Ember objects. For example:
+
+  ```handlebars
+  <div {{bind-style color="mainColor" background-color="altColor"}}>Do this</div>
+  ```
+
+  The above handlebars template will fill the `<div>`'s `style` attribute with
+  the values of the properties referenced by `"mainColor"` and `"altColor"`.
+
+  If the rendering context of this template is the following object:
+
+  ```javascript
+  {
+    mainColor: 'white',
+    altColor: '#007aff'
+  }
+  ```
+
+  The resulting HTML output will be:
+
+  ```html
+  <div style="color:white;background-color:#007aff;">Do this</div>
+  ```
+
+  `bind-style` cannot redeclare existing DOM element attributes. The use of
+  `bind-style` in the following examples will be ignored and other styles
+  will take precedence:
+
+  ```handlebars
+  <div style="color:red;" {{bind-style color="mainColor"}}>Don't do this</div>
+  ```
+
+  ```handlebars
+  <div style="font-weight:bold;" {{bind-style color="mainColor"}}>Don't do this</div>
+  ```
+
+  ```handlebars
+  <div {{bind-attr style="someStyles"}} {{bind-style color="mainColor"}}>Don't do this</div>
+  ```
+
+  @method bind-style
+  @for Ember.Handlebars.helpers
+  @param {Hash} options
+  @return {String} HTML string
+*/
 EmberHandlebars.registerHelper('bind-style', function bindStyleHelper(options) {
   var styles = options.hash;
 
@@ -115,8 +157,14 @@ EmberHandlebars.registerHelper('bind-style', function bindStyleHelper(options) {
 });
 
 /**
- * 
- */
+  See `bind-style`
+
+  @method bindStyle
+  @for Ember.Handlebars.helpers
+  @deprecated
+  @param {Hash} options
+  @return {String} HTML string
+*/
 EmberHandlebars.registerHelper('bindStyle', function bindStyleHelper() {
   Ember.warn("The 'bindStyle' view helper is deprecated in favor of 'bind-style'");
   return EmberHandlebars.helpers['bind-style'].apply(this, arguments);
