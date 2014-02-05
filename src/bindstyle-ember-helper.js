@@ -95,7 +95,13 @@ EmberHandlebars.registerHelper('bind-style', function bindStyleHelper(options) {
     }
   }, this);
 
-  ret.push('"');
+  if (ret.length === 1) {
+    // No styles, don't add an empty 'style' attr:
+    ret.length = 0;
+  }
+  else {
+    ret.push('"');
+  }
 
   // Add the unique identifier
   // NOTE: We use all lower-case since Firefox has problems with mixed case in SVG
