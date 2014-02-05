@@ -1,12 +1,23 @@
-Ember.Handlebars.registerHelper('bindStyle', function(options) {
-  var fmt = Ember.String.fmt;
-  var attrs = options.hash;
+(function(){
 
-  Ember.assert("You must specify at least one hash argument to bindStyle", !!Ember.keys(attrs).length);
+var EmberHandlebars = Ember.Handlebars;
+
+var fmt = Ember.String.fmt;
+var handlebarsGet = EmberHandlebars.get, normalizePath = EmberHandlebars.normalizePath;
+var forEach = Ember.ArrayPolyfills.forEach;
+
+/**
+ * `bind-style` helper.
+ * 
+ * Modelled off the `bind-attr` helper, this helper allows you to bind to several styles.
+ */
+EmberHandlebars.registerHelper('bind-style', function bindStyleHelper(options) {
+  var styles = options.hash;
+
+  Ember.assert("You must specify at least one hash argument to bind-style", !!Ember.keys(styles).length);
 
   var view = options.data.view;
   var ret = [];
-  var style = [];
   var ctx = this;
 
   // Generate a unique id for this element. This will be added as a
@@ -14,81 +25,92 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
   // the bound property changes.
   var dataId = ++Ember.uuid;
 
-  var attrKeys = Ember.keys(attrs).filter(function(item, index, self) {
-    return (item.indexOf("unit") == -1) && (item !== "static");
-  });
+  var styleNames = Ember.keys(styles);
 
-  // For each attribute passed, create an observer and emit the
-  // current value of the property as an attribute.
-  attrKeys.forEach(function(attr) {
-    var property = attrs[attr];
+  ret.push(' style="');
 
-    Ember.assert(fmt("You must provide a String for a bound attribute, not %@", [property]), typeof property === 'string');
+  // For each style passed, create an observer and emit the
+  // current value of the property as a style.
+  forEach.call(styleNames, function(styleName) {
+    var path = styles[styleName],
+        normalized;
 
-    var propertyUnit = attrs[attr+"-unit"] || attrs["unit"] || ''; 
+    Ember.assert(fmt("You must provide an expression as the value of bound style. You specified: %@=%@", [styleName, path]), typeof path === 'string');
 
-    var value = Em.get(ctx, property);
+    normalized = normalizePath(ctx, path, options.data);
+    styleName = jQuery.camelCase(styleName);
 
-    Ember.assert(fmt("Attributes must be numbers, strings or booleans, not %@", [value]), value == null || typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean');
+    var value = (path === 'this') ? normalized.root : handlebarsGet(ctx, path, options),
+        type = Ember.typeOf(value);
 
-    var observer, invoker;
+    if (type === 'object') {
+      value = ('' + value);
+      type = 'string';
+    }
+    else if (type === 'number'  &&  isNaN(value)) {
+      value = null;
+      type = 'null';
+    }
+
+    Ember.assert(fmt("Style values must be numbers, strings or objects, not %@", [value]), value === null || value === undefined || type === 'number' || type === 'string');
+
+    var observer;
 
     observer = function observer() {
-      var result = Em.get(ctx, property);
+      var result = handlebarsGet(ctx, path, options),
+          resultType = Ember.typeOf(result);
 
-      Ember.assert(fmt("Attributes must be numbers, strings or booleans, not %@", [result]), result == null || typeof result === 'number' || typeof result === 'string' || typeof result === 'boolean');
+      Ember.assert(fmt("Style values must be numbers, strings or objects, not %@", [result]), result === null || result === undefined || resultType === 'number' || resultType === 'string');
 
-      var elem = view.$("[data-bindAttr-" + dataId + "='" + dataId + "']");
+      var elem = view.$("[data-bindstyle-" + dataId + "='" + dataId + "']");
 
       // If we aren't able to find the element, it means the element
       // to which we were bound has been removed from the view.
       // In that case, we can assume the template has been re-rendered
       // and we need to clean up the observer.
-      if (Ember.isNone(elem) || elem.length === 0) {
-        Ember.removeObserver(ctx, property, invoker);
+      if (!elem || elem.length === 0) {
+        Ember.removeObserver(normalized.root, normalized.path, observer);
         return;
       }
 
-      if (result == null) {
-        result = "";
+      if (result != null) {
+        elem.css(styleName, result);
       }
-
-      if (result !== "") {
-        result += propertyUnit;
-      }
-
-      var currentValue = elem.css(attr);
-
-      if (currentValue !== result) {
-        elem.css(attr, result);
-      }
-    };
-
-    invoker = function() {
-      Ember.run.once(observer);
     };
 
     // Add an observer to the view for when the property changes.
     // When the observer fires, find the element using the
-    // unique data id and update the attribute to the new value.
-    Ember.addObserver(ctx, property, invoker);
-
-    if (value == null) {
-      value = "";
+    // unique data id and update the style to the new value.
+    // Note: don't add observer when path is 'this' or path
+    // is whole keyword e.g. {{#each x in list}} ... {{bind-style style="x"}}
+    if (path !== 'this' && !(normalized.isKeyword && normalized.path === '' )) {
+      view.registerObserver(normalized.root, normalized.path, observer);
     }
 
-    if (value !== "") {
-      value += propertyUnit;
-    }
+    if (value != null) {
+      if (type === 'number'  &&  !(jQuery.cssNumber[jQuery.camelCase(styleName)])) {
+        value += 'px';
+      }
 
-    if (value) {
-      style.push(attr+':'+value+';');
+      ret.push(styleName, ':', Handlebars.Utils.escapeExpression(value), ';');
     }
   }, this);
 
-  style.push(attrs["static"] || '');
+  ret.push('"');
 
   // Add the unique identifier
-  ret.push('style="' + style.join(' ') + '" data-bindAttr-' + dataId + '="' + dataId + '"');
-  return new Ember.Handlebars.SafeString(ret.join(' '));
+  // NOTE: We use all lower-case since Firefox has problems with mixed case in SVG
+  ret.push(' data-bindstyle-', dataId, '="', dataId, '"');
+
+  return new EmberHandlebars.SafeString(ret.join(''));
 });
+
+/**
+ * 
+ */
+EmberHandlebars.registerHelper('bindStyle', function bindStyleHelper() {
+  Ember.warn("The 'bindStyle' view helper is deprecated in favor of 'bind-style'");
+  return EmberHandlebars.helpers['bind-style'].apply(this, arguments);
+});
+
+})();
