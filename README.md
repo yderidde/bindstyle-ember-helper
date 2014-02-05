@@ -19,10 +19,10 @@ App.MyBarChart = Ember.View.extend({
 });
 ```
 
-In your handlebars template you will then do  
+In your handlebars template you will then do:
 
 ```html
-<div class="bar" {{bind-style width="barWidth"}}></div> 
+<div class="bar" {{bind-style width="barWidth"}}></div>
 ```
 
 In this case, since `barWidth` evaluates to a number, and the CSS `width` property takes a length value, `px` is automatically added to the value. Thus the resulting HTML will be:
@@ -31,5 +31,5 @@ In this case, since `barWidth` evaluates to a number, and the CSS `width` proper
 <div class="bar" style="width:200px"></div>
 ```
 
-Note: Unit expansion works in exactly the same way as jQuery's `css` method (in fact it uses the same underlying code).
+Note: Unit expansion works in exactly the same way as jQuery's `css` method (in fact it uses the same underlying jQuery methods).
 
