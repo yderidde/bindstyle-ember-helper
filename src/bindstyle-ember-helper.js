@@ -27,14 +27,15 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
 
     var propertyUnit = attrs[attr+"-unit"] || attrs["unit"] || ''; 
 
-    var value = Em.get(ctx, property);
+    var normalized = Em.Handlebars.normalizePath(ctx, property, options.data);
+    var value = (property === "this" ? normalized.root : Em.Handlebars.get(ctx, property, options));
 
     Ember.assert(fmt("Attributes must be numbers, strings or booleans, not %@", [value]), value == null || typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean');
 
     var observer, invoker;
 
     observer = function observer() {
-      var result = Em.get(ctx, property);
+      var result = Em.Handlebars.get(ctx, property, options);
 
       Ember.assert(fmt("Attributes must be numbers, strings or booleans, not %@", [result]), result == null || typeof result === 'number' || typeof result === 'string' || typeof result === 'boolean');
 
@@ -52,7 +53,7 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
       var currentValue = elem.css(attr);
 
       if (currentValue !== result) {
-        elem.css(attr, result+propertyUnit);
+        elem.css(attr, result+""+propertyUnit);
       }
     };
 
@@ -63,7 +64,9 @@ Ember.Handlebars.registerHelper('bindStyle', function(options) {
     // Add an observer to the view for when the property changes.
     // When the observer fires, find the element using the
     // unique data id and update the attribute to the new value.
-    Ember.addObserver(ctx, property, invoker);
+    if (property !== "this" && !(normalized.root && normalized.path === "")) {
+      view.registerObserver(normalized.root, normalized.path, observer);
+    }
 
     style.push(attr+':'+value+propertyUnit+';'+(attrs["static"] || ''));
   }, this);
