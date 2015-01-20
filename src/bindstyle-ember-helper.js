@@ -54,7 +54,7 @@
                   elem.css(attr, result + "" + propertyUnit);
               }));
 
-              if (attr === 'background-image' && value.substr(0, 4) !== 'url(') {
+              if (attr === 'background-image' && typeof value === 'string' && value.substr(0, 4) !== 'url(') {
                   value = 'url(' + value + ')';
               }
 
